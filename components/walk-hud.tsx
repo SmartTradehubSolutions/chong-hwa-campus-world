@@ -1,0 +1,35 @@
+'use client';
+import{useRef,useEffect}from'react';
+import{ArrowUp,ArrowDown,ArrowLeft,ArrowRight,Footprints,BookOpen,MapPin,Trophy,Check,Camera,X}from'lucide-react';
+import{Dialog,DialogContent,DialogTitle,DialogDescription}from'@/components/ui/dialog';
+import{places}from'@/lib/campus/data';
+import{entrances}from'@/lib/campus/walk-math.mjs';
+import type{WalkState}from'@/lib/campus/walk-controller';
+import type{CampusApi}from'./campus-view';
+type Props={state:WalkState;avatar:'boy'|'girl';onAvatar:(v:'boy'|'girl')=>void;api:CampusApi|null;passport:boolean;setPassport:(v:boolean)=>void;blocked:boolean;onGoTo:(id:string)=>void};
+export default function WalkHud({state,avatar,onAvatar,api,passport,setPassport,blocked,onGoTo}:Props){
+ const held=useRef(new Set<string>()),game=state.game,near=state.nearby==='court'?{name:'Basketball court',zh:'篮球场'}:places.find(p=>p.id===state.nearby);
+ const press=(id:string,value:boolean)=>{if(value)held.current.add(id);else held.current.delete(id);api?.walk.input(Number(held.current.has('right'))-Number(held.current.has('left')),Number(held.current.has('up'))-Number(held.current.has('down')));};
+ useEffect(()=>{if(blocked){held.current.clear();api?.walk.input(0,0);}},[blocked,api]);
+ const allVisited=state.visited.length===entrances.length;
+ return <>
+  <div className="walk-toolbar"><div className="student-choice" aria-label="Choose your student"><Footprints size={18}/><button aria-pressed={avatar==='boy'} onClick={()=>onAvatar('boy')}>Boy</button><button aria-pressed={avatar==='girl'} onClick={()=>onAvatar('girl')}>Girl</button></div><button className="passport-button" onClick={()=>setPassport(true)}><BookOpen size={17}/>Campus passport <span>{state.visited.length}/{entrances.length}</span></button></div>
+  <div className="walk-minimap" aria-label="Your position on the school map"><svg viewBox="-100 -95 200 190" role="img" aria-label="Campus buildings, entrances and your student"><rect x="-97" y="-91" width="194" height="179" fill="#e4e8d9"/>{places.filter(p=>p.id!=='gate').map(p=><rect key={p.id} x={p.x-p.w/2} y={p.z-p.d/2} width={p.w} height={p.d} fill={p.id==='pond'?'#78a695':'#b2beb0'} stroke="#839383" strokeWidth=".8"/>)}<rect x="-64.5" y="12" width="13" height="24" fill="#539cc1"/>{entrances.map(e=><circle key={e.id} cx={e.x} cy={e.z} r={state.visited.includes(e.id)?2:1.6} fill={state.visited.includes(e.id)?'#398759':'#a16e35'}/>)}<circle cx={state.x} cy={state.z} r="4.8" fill="#fff"/><path d="M0 -5 L3.5 4 L0 2 L-3.5 4 Z" transform={'translate('+state.x+' '+state.z+') rotate('+(-state.yaw*180/Math.PI)+')'} fill="#b04d37"/></svg><span>You are here</span></div>
+  {game.phase==='off'?<>
+   <div className="walk-instructions"><span><kbd>W A S D</kbd> walk · <kbd>Shift</kbd> run</span><span>Drag to look · Approach a gold ring</span></div>
+   <div className="walk-interaction" aria-live="polite">{!state.active?<span>Entering campus…</span>:near?<button disabled={blocked} onClick={()=>api?.walk.interact()}><kbd>E</kbd><span><strong>{state.nearby==='court'?'Play basketball':near.name}</strong><span>{state.nearby==='court'?'Five shots. How many can you score?':state.visited.includes(state.nearby!)?'Explore this place':'Explore & collect a campus stamp'}</span></span>{state.nearby==='court'?<Trophy size={20}/>:<Camera size={20}/>}</button>:<span>{allVisited?'Campus passport complete!':'Walk to a gold ring to explore a place.'}</span>}</div>
+   <div className="walk-dpad" aria-label="Touch walking controls">{[{id:'up',Icon:ArrowUp},{id:'left',Icon:ArrowLeft},{id:'down',Icon:ArrowDown},{id:'right',Icon:ArrowRight}].map(({id,Icon})=><button key={id} className={'direction-'+id} aria-label={'Walk '+id} disabled={blocked||!state.active} onPointerDown={e=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);press(id,true);}} onPointerUp={()=>press(id,false)} onPointerCancel={()=>press(id,false)} onLostPointerCapture={()=>press(id,false)}><Icon size={23}/></button>)}</div>
+  </>:<section className="basketball-hud" aria-label="Basketball challenge">
+   <div className="game-title"><Trophy size={19}/><strong>Chong Hwa hoops</strong><button onClick={()=>api?.walk.leaveBasketball()} aria-label="Leave basketball"><X size={18}/></button></div>
+   <div className="game-score"><span><strong>{game.score}</strong> baskets</span><span>{game.attempts} / 5 shots</span></div>
+   <p aria-live="polite">{game.message||'Ball in the air…'}</p>
+   {game.phase==='results'?<button className="shoot-button" onClick={()=>api?.walk.startBasketball()}>Play again</button>:<>
+    <div className="shot-aim"><button disabled={game.phase!=='aim'} onClick={()=>api?.walk.aim(-.02)} aria-label="Aim left"><ArrowLeft size={18}/></button><span>Aim <strong>{Math.abs(game.aim)<.02?'Centre':(game.aim<0?'Left ':'Right ')+Math.round(Math.abs(game.aim)*180/Math.PI)+'°'}</strong></span><button disabled={game.phase!=='aim'} onClick={()=>api?.walk.aim(.02)} aria-label="Aim right"><ArrowRight size={18}/></button></div>
+    <div className="power-label"><span>Shot power</span><span>{Math.round(game.power*100)}%</span></div><div className="shot-power" role="meter" aria-label="Shot power. Aim for 65 percent." aria-valuenow={Math.round(game.power*100)} aria-valuemin={0} aria-valuemax={100}><i className="sweet-zone"/><i className="power-needle" style={{left:(game.power*100)+'%'}}/></div>
+    <button className="shoot-button" disabled={game.phase!=='aim'||blocked} onPointerDown={e=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);api?.walk.charge(true);}} onPointerUp={()=>api?.walk.charge(false)} onPointerCancel={()=>api?.walk.charge(false)} onKeyDown={e=>{if(e.code==='Space'||e.code==='Enter'){e.preventDefault();if(!e.repeat)api?.walk.charge(true);}}} onKeyUp={e=>{if(e.code==='Space'||e.code==='Enter'){e.preventDefault();api?.walk.charge(false);}}}>{game.charging?'Release to shoot':game.phase==='flight'?'Watch your shot…':'Hold to charge · Release to shoot'}</button>
+    <span className="game-keys">A / D to aim · Hold Space, then release in green</span>
+   </>}
+  </section>}
+  <Dialog open={passport} onOpenChange={setPassport}><DialogContent className="passport-dialog"><DialogTitle>My campus passport</DialogTitle><DialogDescription>{allVisited?'You visited the whole school!':'Walk to each entrance and press E to collect its stamp.'} {state.visited.length} of {entrances.length} collected this visit.</DialogDescription><div className="passport-list">{entrances.map(e=>{const p=places.find(p=>p.id===e.id);return <button key={e.id} onClick={()=>{setPassport(false);onGoTo(e.id);}}>{state.visited.includes(e.id)?<Check className="stamp-done" size={18}/>:<MapPin size={18}/>}<span><strong>{p?.name||'Basketball court'}</strong><span>{e.id==='court'?'Play the five-shot challenge':p?.views?'Explore real 360° school views':'Discover this campus landmark'}</span></span><Footprints size={17}/></button>;})}</div><p className="passport-note">Select a place to start nearby. Stamps are collected when you interact, and last for this visit.</p></DialogContent></Dialog>
+ </>;
+}

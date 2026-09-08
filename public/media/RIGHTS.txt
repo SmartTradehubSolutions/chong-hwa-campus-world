@@ -1,0 +1,5 @@
+School-owned materials: all rights belong to Chong Hwa Independent High School,
+Kuala Lumpur. Any third-party rights remain with their respective holders.
+These assets and their derivatives are NOT covered by the project's MIT code
+license. No ownership, endorsement or permission from the school is claimed.
+See ASSET_RIGHTS.md and docs/SOURCES.md at the repository root for details.

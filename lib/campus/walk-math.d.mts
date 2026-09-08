@@ -1,0 +1,16 @@
+import type {Place} from './data';
+export type Point={x:number;z:number};
+export type Point3=Point&{y:number};
+export type Obstacle=Point&{w:number;d:number;h:number};
+export type Entrance=Point&{id:string};
+export type Shot={origin:Point3;velocity:Point3;gravity:number};
+export const SPAWN:Point;
+export const HOOP:Point3;
+export const entrances:Entrance[];
+export function buildObstacles(places:Place[]):Obstacle[];
+export function isFree(p:Point,obstacles:Obstacle[],radius?:number):boolean;
+export function moveStudent(p:Point,x:number,forward:number,yaw:number,distance:number,obstacles:Obstacle[]):Point;
+export function nearestEntrance(p:Point,radius?:number):Entrance|null;
+export function createShot(origin:Point3,aim:number,power:number):Shot;
+export function shotAt(shot:Shot,t:number):Point3;
+export function shotScores(shot:Shot):boolean;

@@ -1,0 +1,11 @@
+import {spawnSync} from 'node:child_process';
+import {access,readFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+const root=fileURLToPath(new URL('../',import.meta.url));
+const result=spawnSync(process.execPath,['node_modules/vinext/dist/cli.js','build'],{cwd:root,stdio:'inherit',env:{...process.env,CAMPUS_DEPLOY_TARGET:'vercel'}});
+if(result.error)throw result.error;
+if(result.status!==0)process.exit(result.status??1);
+for(const file of ['index.html','branding/chkl-official-header.png','branding/chkl-official-crest.png','media/xuexiaodamenkou-1.jpg','media/DataranCHKL-1.jpg','fonts/dm-sans-latin-400-normal.woff2'])await access(new URL('../dist/client/'+file,import.meta.url));
+const html=await readFile(new URL('../dist/client/index.html',import.meta.url),'utf8');
+if(!html.includes('Walk')||!html.includes('Chong Hwa'))throw new Error('Campus export is missing its primary content.');
+console.log('Vercel static export verified: campus page, branding, panoramas and fonts.');
