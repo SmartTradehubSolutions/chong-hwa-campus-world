@@ -12,7 +12,7 @@
     "start": "npm run preview",
     "lint": "oxlint",
     "format": "oxfmt",
-    "test": "node --experimental-strip-types --loader ./tests/resolve-ts.mjs --test tests/world-math.test.mjs tests/geometry.test.mjs tests/world-layout.test.mjs tests/walk-math.test.mjs tests/walk-controller.test.mjs",
+    "test": "node --experimental-strip-types --loader ./tests/resolve-ts.mjs --test tests/world-math.test.mjs tests/geometry.test.mjs tests/world-layout.test.mjs tests/walk-math.test.mjs tests/walk-controller.test.mjs tests/materials-and-visits.test.mjs",
     "preview": "vite preview --outDir dist/client",
     "typecheck": "tsc --noEmit"
   },

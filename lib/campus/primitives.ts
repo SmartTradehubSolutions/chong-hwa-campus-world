@@ -1,9 +1,12 @@
 import * as T from 'three';
+import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
 import type {Place} from './data';
-const mats=new Map<string,T.MeshStandardMaterial>();
-export function material(color:string){ if(!mats.has(color))mats.set(color,new T.MeshStandardMaterial({color,roughness:.83,metalness:0}));return mats.get(color)!; }
-const cube=new T.BoxGeometry(1,1,1);
-export function box(g:T.Group,x:number,y:number,z:number,w:number,h:number,d:number,color:string){const m=new T.Mesh(cube,material(color));m.position.set(x,y,z);m.scale.set(w,h,d);m.castShadow=true;m.receiveShadow=true;g.add(m);return m;}
+import {surfaceMaterial,metricUV,disposeMaterials} from './materials';
+import {batchMeshes} from './batch-meshes';
+export const material=surfaceMaterial;
+const boxGeometries=new Map<string,T.BufferGeometry>();
+const cube=new T.BoxGeometry(1,1,1),roundedCube=new RoundedBoxGeometry(1,1,1,1,.1);
+export function box(g:T.Group,x:number,y:number,z:number,w:number,h:number,d:number,color:string){const key=[w,h,d].join(':');if(!boxGeometries.has(key))boxGeometries.set(key,metricUV((Math.max(w,h,d)<1.8&&Math.min(w,h,d)>.08?roundedCube:cube).clone(),new T.Vector3(w,h,d)));const m=new T.Mesh(boxGeometries.get(key)!,material(color));m.position.set(x,y,z);m.scale.set(w,h,d);m.castShadow=true;m.receiveShadow=true;g.add(m);return m;}
 function windows(g:T.Group,w:number,d:number,h:number,floors:number){
  const points:{p:T.Vector3;s:T.Vector3}[]=[]; const cols=Math.max(2,Math.floor(w/3.7)),rows=floors;
  for(let f=0;f<rows;f++){const y=1.5+f*(h-1.6)/rows;
@@ -24,12 +27,28 @@ function block(g:T.Group,w:number,d:number,h:number,floors:number,roof=true){
  for(let f=1;f<=floors;f++)box(g,0,f*h/floors-.2,0,w+.25,.35,d+.25,'#ecece6');
  box(g,0,.5,0,w+1,1,d+1,'#c8c9ba');
  if(roof){const roofShape=new T.Shape();roofShape.moveTo(-d/2-1,0);roofShape.lineTo(0,3);roofShape.lineTo(d/2+1,0);roofShape.closePath();
- const geom=new T.ExtrudeGeometry(roofShape,{depth:w+2,bevelEnabled:false});geom.rotateY(-Math.PI/2);geom.translate((w+2)/2,h,0);const m=new T.Mesh(geom,material('#787d79'));m.castShadow=true;g.add(m);}
+ const geom=new T.ExtrudeGeometry(roofShape,{depth:w+2,bevelEnabled:false});geom.rotateY(-Math.PI/2);geom.translate((w+2)/2,h,0);metricUV(geom);const m=new T.Mesh(geom,material('#787d79'));m.castShadow=true;g.add(m);}
+ // Recessed glazing, narrow mullions, sills and downpipes add storey depth.
+ for(const side of [-1,1]){
+  const cols=Math.max(2,Math.floor(w/4.5));
+  for(let f=0;f<floors;f++){
+   const y=(f+.55)*h/floors,wh=h/floors*.34;
+   for(let c=0;c<cols;c++){
+    const x=-w/2+(c+.5)*w/cols,ww=w/cols*.55;
+    box(g,x,y,side*(d/2+.19),ww,wh,.035,'#354f50');
+    box(g,x,y,side*(d/2+.23),.055,wh,.065,'#798378');
+    box(g,x,y-wh/2-.08,side*(d/2+.28),ww+.24,.12,.36,'#dedfd8');
+   }
+  }
+  for(const x of [-w/2+.7,w/2-.7])box(g,x,h*.48,side*(d/2+.4),.11,h*.95,.13,'#798378');
+  box(g,0,h+.05,side*(d/2+.4),w+.9,.18,.22,'#798378');
+ }
+
 }
 function oval(rx:number,rz:number,y:number,color:string,inner=0){
  const shape=new T.Shape();for(let i=0;i<=64;i++){const a=i/64*Math.PI*2,x=Math.cos(a)*rx,z=Math.sin(a)*rz;i===0?shape.moveTo(x,z):shape.lineTo(x,z);}
  if(inner){const hole=new T.Path();for(let i=64;i>=0;i--){const a=i/64*Math.PI*2,x=Math.cos(a)*(rx-inner),z=Math.sin(a)*(rz-inner);i===64?hole.moveTo(x,z):hole.lineTo(x,z);}shape.holes.push(hole);}
- const geo=new T.ShapeGeometry(shape);geo.rotateX(-Math.PI/2);geo.translate(0,y,0);const mesh=new T.Mesh(geo,material(color));mesh.receiveShadow=true;return mesh;
+ const geo=new T.ShapeGeometry(shape);geo.rotateX(-Math.PI/2);geo.translate(0,y,0);metricUV(geo);const mesh=new T.Mesh(geo,material(color));mesh.receiveShadow=true;return mesh;
 }
 export function building(p:Place){
  const g=new T.Group();g.userData.placeId=p.id;
@@ -77,12 +96,23 @@ export function building(p:Place){
  }
  return g;
 }
+const canopyGeometry=new T.SphereGeometry(1,12,9);
+{
+ const a=canopyGeometry.attributes.position;
+ for(let i=0;i<a.count;i++){const x=a.getX(i),y=a.getY(i),z=a.getZ(i);const k=1+.09*Math.sin(x*17+y*9+z*13);a.setXYZ(i,x*k,y*k,z*k);}
+ canopyGeometry.computeVertexNormals();
+}
 export function tree(seed=1){
- const g=new T.Group(),h=3+(Math.sin(seed*73.1)+1)*1.3;
- box(g,0,h*.45,0,.5,h,.5,'#8c7960');
+ const g=new T.Group(),h=3.5+(Math.sin(seed*73.1)+1)*1.4;
+ const trunk=new T.Mesh(metricUV(new T.CylinderGeometry(.17,.3,h,9)),material('#8c7960'));trunk.position.y=h*.48;trunk.castShadow=true;g.add(trunk);
  const colors=['#487958','#5b8c62','#72996a'];
- const crown=new T.Mesh(new T.IcosahedronGeometry(h*.58,1),material(colors[Math.abs(seed)%3]));
- crown.position.set(0,h,0);crown.scale.set(1,1.1,1);crown.castShadow=true;g.add(crown);return g;
+ for(let i=0;i<5;i++){
+  const a=i*2.4+seed,r=i?h*.32:0,top=h+(i===0?h*.2:Math.sin(i+seed)*.45);
+  const crown=new T.Mesh(canopyGeometry,material(colors[(Math.abs(seed)+i)%3]));
+  crown.position.set(Math.cos(a)*r,top,Math.sin(a)*r);crown.scale.set(h*.46,h*(i===0?.53:.34),h*.43);crown.castShadow=true;crown.receiveShadow=true;g.add(crown);
+  if(i){const branch=new T.Mesh(new T.CylinderGeometry(.065,.12,h*.6,6),material('#8c7960'));branch.position.set(Math.cos(a)*r*.45,h*.73,Math.sin(a)*r*.45);branch.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),new T.Vector3(Math.cos(a)*r,h*.45,Math.sin(a)*r).normalize());g.add(branch);}
+ }
+ batchMeshes(g);return g;
 }
 export function court(){
  const g=new T.Group();box(g,0,.12,0,17,.2,28,'#719c8f');
@@ -99,4 +129,4 @@ export function court(){
  }
  return g;
 }
-export function disposeShared(){cube.dispose();mats.forEach(m=>m.dispose());mats.clear();}
+export function disposeShared(){boxGeometries.forEach(g=>g.dispose());boxGeometries.clear();disposeMaterials();}

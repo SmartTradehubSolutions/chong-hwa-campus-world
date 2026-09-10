@@ -10,7 +10,7 @@ School assets are credited here for traceability. These citations do not grant a
 - [Official campus map](https://www.chonghwakl.edu.my/wp-content/uploads/2026/05/20251224-CampusMap-Pg1.jpg): stored as `public/media/campus-map.jpg`.
 - [Sports centre opening article](https://www.chonghwakl.edu.my/2025/02/28/20250228-liankehuodongzhongxinqiyongli-news/): architectural references for the arena. The local `public/media/arena-photo.jpg` is a conventional photograph, not a 360° panorama.
 
-The panorama JPEGs have been resized for web delivery. Files in `public/thumbs/` are derived from these photographs; `arena.jpg` derives from the arena photograph. They remain subject to the source material's rights.
+The panoramas currently mapped to building visits retain their original school-source resolution; other preview JPEGs have been resized for web delivery. Files in `public/thumbs/` are derived from these photographs; `arena.jpg` derives from the arena photograph. They remain subject to the source material's rights.
 
 ## Authentic branding
 
@@ -33,3 +33,9 @@ The model combines references from different dates, including 2020/2023 panorama
 ## Experience inspiration
 
 [CLHS](https://clhs.manfye.com/) inspired the idea of unfolding a campus experience into a map. [Jalan KL](https://jalankl.themasterofnone.xyz/) inspired walkable exploration. This is an acknowledgment of the references, not a claim of shared authorship, affiliation or endorsement.
+
+## Material realism update · 10 September 2026
+
+The reconstructed scene uses locally hosted albedo, OpenGL normal and roughness maps from [Poly Haven](https://polyhaven.com/). Seven CC0 material sets are documented in [texture-manifest.json](texture-manifest.json). Metric texture coordinates keep brick and paving size consistent across large façades. These generic surface scans approximate the referenced concrete, brick and roof finishes; they do not establish exact school materials.
+
+Entrance interactions now open the first existing, verified school panorama directly. A viewer selector exposes other mapped views in the same building. No unverified room has been assigned to an otherwise undocumented block. Blocks I, J, G, E and C currently show facility information; L shows an ordinary official photograph. They are not presented as scanned or 360° interiors.

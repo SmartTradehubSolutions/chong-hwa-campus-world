@@ -1,0 +1,9 @@
+Photographic PBR surface textures from Poly Haven
+License: CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+https://polyhaven.com/license
+
+These generic material textures are CC0 assets, not school-owned photographs.
+They may be reused separately from the reserved-rights school branding and media.
+Asset names, map types and original download URLs are recorded in
+docs/texture-manifest.json at the repository root.

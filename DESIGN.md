@@ -1,0 +1,3 @@
+# Campus visual direction
+
+A visitor walks through the campus in humid late-morning Kuala Lumpur daylight. Architecture uses weathered red brick, pale concrete, shaded corridors, dark glazing, roof tiles, paved courts and natural green vegetation. Keep the existing restrained cream app shell and DM Sans typography; use the established school crest and wordmark. Photographic textures use metric UVs to avoid stretched bricks. Normal and roughness maps provide grazing-light detail, while balanced sky fill retains visible shadows. Interfaces for real 360 views use clear names, source attribution and keyboard-accessible room selection. Loading and missing-photo states must remain usable.

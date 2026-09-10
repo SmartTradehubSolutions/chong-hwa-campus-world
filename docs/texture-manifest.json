@@ -1,0 +1,184 @@
+[
+  {
+    "family": "brick",
+    "asset": "red_brick_03",
+    "source": "https://polyhaven.com/a/red_brick_03",
+    "license": "CC0-1.0",
+    "files": [
+      {
+        "map": "Diffuse",
+        "file": "public/textures/brick/Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_brick_03/red_brick_03_diff_1k.jpg",
+        "bytes": 694500
+      },
+      {
+        "map": "nor_gl",
+        "file": "public/textures/brick/nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_brick_03/red_brick_03_nor_gl_1k.jpg",
+        "bytes": 955430
+      },
+      {
+        "map": "Rough",
+        "file": "public/textures/brick/Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_brick_03/red_brick_03_rough_1k.jpg",
+        "bytes": 286623
+      }
+    ]
+  },
+  {
+    "family": "concrete",
+    "asset": "concrete_wall_001",
+    "source": "https://polyhaven.com/a/concrete_wall_001",
+    "license": "CC0-1.0",
+    "files": [
+      {
+        "map": "Diffuse",
+        "file": "public/textures/concrete/Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_wall_001/concrete_wall_001_diff_1k.jpg",
+        "bytes": 79320
+      },
+      {
+        "map": "nor_gl",
+        "file": "public/textures/concrete/nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_wall_001/concrete_wall_001_nor_gl_1k.jpg",
+        "bytes": 179270
+      },
+      {
+        "map": "Rough",
+        "file": "public/textures/concrete/Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_wall_001/concrete_wall_001_rough_1k.jpg",
+        "bytes": 156479
+      }
+    ]
+  },
+  {
+    "family": "asphalt",
+    "asset": "asphalt_02",
+    "source": "https://polyhaven.com/a/asphalt_02",
+    "license": "CC0-1.0",
+    "files": [
+      {
+        "map": "Diffuse",
+        "file": "public/textures/asphalt/Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/asphalt_02/asphalt_02_diff_1k.jpg",
+        "bytes": 731707
+      },
+      {
+        "map": "nor_gl",
+        "file": "public/textures/asphalt/nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/asphalt_02/asphalt_02_nor_gl_1k.jpg",
+        "bytes": 1240122
+      },
+      {
+        "map": "Rough",
+        "file": "public/textures/asphalt/Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/asphalt_02/asphalt_02_rough_1k.jpg",
+        "bytes": 544032
+      }
+    ]
+  },
+  {
+    "family": "grass",
+    "asset": "leafy_grass",
+    "source": "https://polyhaven.com/a/leafy_grass",
+    "license": "CC0-1.0",
+    "files": [
+      {
+        "map": "Diffuse",
+        "file": "public/textures/grass/Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/leafy_grass/leafy_grass_diff_1k.jpg",
+        "bytes": 1195394
+      },
+      {
+        "map": "nor_gl",
+        "file": "public/textures/grass/nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/leafy_grass/leafy_grass_nor_gl_1k.jpg",
+        "bytes": 1466049
+      },
+      {
+        "map": "Rough",
+        "file": "public/textures/grass/Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/leafy_grass/leafy_grass_rough_1k.jpg",
+        "bytes": 511385
+      }
+    ]
+  },
+  {
+    "family": "roof",
+    "asset": "roof_slates_02",
+    "source": "https://polyhaven.com/a/roof_slates_02",
+    "license": "CC0-1.0",
+    "files": [
+      {
+        "map": "Diffuse",
+        "file": "public/textures/roof/Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/roof_slates_02/roof_slates_02_diff_1k.jpg",
+        "bytes": 515626
+      },
+      {
+        "map": "nor_gl",
+        "file": "public/textures/roof/nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/roof_slates_02/roof_slates_02_nor_gl_1k.jpg",
+        "bytes": 763206
+      },
+      {
+        "map": "Rough",
+        "file": "public/textures/roof/Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/roof_slates_02/roof_slates_02_rough_1k.jpg",
+        "bytes": 307076
+      }
+    ]
+  },
+  {
+    "family": "bark",
+    "asset": "bark_brown_02",
+    "source": "https://polyhaven.com/a/bark_brown_02",
+    "license": "CC0-1.0",
+    "files": [
+      {
+        "map": "Diffuse",
+        "file": "public/textures/bark/Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/bark_brown_02/bark_brown_02_diff_1k.jpg",
+        "bytes": 659592
+      },
+      {
+        "map": "nor_gl",
+        "file": "public/textures/bark/nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/bark_brown_02/bark_brown_02_nor_gl_1k.jpg",
+        "bytes": 1015623
+      },
+      {
+        "map": "Rough",
+        "file": "public/textures/bark/Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/bark_brown_02/bark_brown_02_rough_1k.jpg",
+        "bytes": 337946
+      }
+    ]
+  },
+  {
+    "family": "pavers",
+    "asset": "concrete_pavers",
+    "source": "https://polyhaven.com/a/concrete_pavers",
+    "license": "CC0-1.0",
+    "files": [
+      {
+        "map": "Diffuse",
+        "file": "public/textures/pavers/Diffuse.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_pavers/concrete_pavers_diff_1k.jpg",
+        "bytes": 757968
+      },
+      {
+        "map": "nor_gl",
+        "file": "public/textures/pavers/nor_gl.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_pavers/concrete_pavers_nor_gl_1k.jpg",
+        "bytes": 918300
+      },
+      {
+        "map": "Rough",
+        "file": "public/textures/pavers/Rough.jpg",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_pavers/concrete_pavers_rough_1k.jpg",
+        "bytes": 324326
+      }
+    ]
+  }
+]

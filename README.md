@@ -12,9 +12,10 @@ Walk around a playful 3D interpretation of **Chong Hwa Independent High School, 
 
 ## What you can do
 
+- **Explore textured architecture:** photographic brick, concrete, roof, bark, paving and road materials, finer window details and natural daylight. These are representative materials on an illustrative reconstruction.
 - **Explore three map views:** rotate a world with landmarks spread around the globe, view the 3D campus, or flatten it into a plan.
 - **Walk as a student:** choose a boy or girl character, pass uniformed student characters and occasional teachers, and explore in third person.
-- **Discover the school:** interact at building entrances to read about facilities and open available official 360° photographs.
+- **Discover the school:** press **E** at an entrance to open its available official 360° photograph immediately. Switch rooms inside the viewer and return to walking; buildings without a verified panorama show their photo or facility information.
 - **Fill your campus passport:** visit 15 stops, including the basketball court. Progress lasts for the current page session.
 - **Play basketball:** aim, charge and release five shots, then try to beat your score.
 - **Find your way:** use the directory, labels, minimap and camera controls. Touch controls are available for walking.
@@ -47,7 +48,7 @@ The project uses React, TypeScript, Three.js, Tailwind CSS and **Vinext**, a Vit
 
 ## Validation status
 
-The release passes all 23 automated tests, TypeScript checking and the static production build. The inherited source currently has lint findings in the app and shared UI components, so `npm run lint` exits nonzero. Lint cleanup is a known contributor task; CI currently gates tests, types and the production build. The test runner also prints a Node experimental-loader warning, and the build warns about the size of the Three.js bundle.
+The release passes all 25 automated tests, TypeScript checking and the static production build. The inherited source currently has lint findings in the app and shared UI components, so `npm run lint` exits nonzero. Lint cleanup is a known contributor task; CI currently gates tests, types and the production build. The test runner also prints a Node experimental-loader warning, and the build warns about the size of the Three.js bundle.
 
 ## Controls
 
@@ -55,7 +56,7 @@ The release passes all 23 automated tests, TypeScript checking and the static pr
 | --- | --- |
 | Map exploration | Drag to orbit, scroll to zoom, and use the on-screen camera controls |
 | Walking | **WASD** or **arrow keys**; hold **Shift** to run; drag to look |
-| Visit a building | Walk to a gold entrance ring, then press **E** or tap the interaction button |
+| Visit a building | Walk to a gold entrance ring, then press **E** or tap to open its real 360° view where available |
 | Touch walking | Use the on-screen directional pad and interaction buttons |
 | Panorama | Drag to look around and scroll to zoom; keyboard controls are also supported |
 | Basketball | **A/D** to aim; hold **Space** or the shot button and release near the marked power target |
@@ -87,6 +88,7 @@ public/branding/         School-owned logo assets; separate rights apply
 public/media/            School-reference photos and map; separate rights apply
 public/thumbs/           Photo-derived thumbnails; separate rights apply
 public/fonts/            DM Sans fonts and their SIL Open Font License
+public/textures/         CC0 photographic material maps from Poly Haven
 docs/                    Sources and contributor architecture guide
 tests/                   Automated behavior and geometry checks
 ```

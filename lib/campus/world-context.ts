@@ -1,4 +1,5 @@
 import * as T from 'three';
+import {surfaceMaterial,metricUV} from './materials';
 import {WORLD_RADIUS,sphereNormal,type WorldAnchor} from './world-layout.mjs';
 import type {Place} from './data';
 
@@ -7,7 +8,7 @@ type Instance={normal:T.Vector3;scale:T.Vector3;height:number;yaw?:number};
 const UP=new T.Vector3(0,1,0),R=WORLD_RADIUS;
 function empty():MeshData{return{positions:[],normals:[],indices:[]};}
 function vertex(data:MeshData,p:T.Vector3){data.positions.push(p.x,p.y,p.z);const n=p.clone().normalize();data.normals.push(n.x,n.y,n.z);}
-function geometry(data:MeshData){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(data.positions,3));g.setAttribute('normal',new T.Float32BufferAttribute(data.normals,3));g.setIndex(data.indices);g.computeBoundingSphere();return g;}
+function geometry(data:MeshData){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(data.positions,3));g.setAttribute('normal',new T.Float32BufferAttribute(data.normals,3));g.setIndex(data.indices);metricUV(g);g.computeBoundingSphere();return g;}
 function ribbon(data:MeshData,path:T.Vector3[],width:number,radius:number){
  const start=data.positions.length/3;
  path.forEach((n,i)=>{const tangent=path[Math.min(i+1,path.length-1)].clone().sub(path[Math.max(0,i-1)]);const side=tangent.cross(n).normalize().multiplyScalar(width/2);const centre=n.clone().multiplyScalar(radius);vertex(data,centre.clone().add(side).normalize().multiplyScalar(radius));vertex(data,centre.clone().sub(side).normalize().multiplyScalar(radius));if(i){const k=start+i*2;data.indices.push(k-2,k,k-1,k-1,k,k+1);}});
@@ -19,7 +20,7 @@ function disc(data:MeshData,normal:T.Vector3,rx:number,rz:number,radius:number){
 }
 export function createWorldContext(layout:Map<string,WorldAnchor>,places:Place[]){
  const group=new T.Group(),materials:T.MeshStandardMaterial[]=[];
- const mat=(color:string)=>{const m=new T.MeshStandardMaterial({color,roughness:.92,transparent:true,side:T.DoubleSide});materials.push(m);return m;};
+ const mat=(color:string)=>{const m=surfaceMaterial(color).clone();m.transparent=true;m.side=T.DoubleSide;materials.push(m);return m;};
  function mesh(data:MeshData,color:string){const object=new T.Mesh(geometry(data),mat(color));object.receiveShadow=true;group.add(object);return object;}
  const pads=empty(),roadBorder=empty(),roads=empty(),lines=empty();
  const nodes=places.map(p=>({p,normal:layout.get(p.id)!.normal,clearance:Math.hypot(p.w,p.d)*.55+6}));
@@ -64,7 +65,7 @@ export function createWorldContext(layout:Map<string,WorldAnchor>,places:Place[]
   items.forEach((a,i)=>{q.setFromUnitVectors(UP,a.normal);yawQ.setFromAxisAngle(UP,a.yaw||0);q.multiply(yawQ);p.copy(a.normal).multiplyScalar(R+a.height+.4);matrix.compose(p,q,a.scale);m.setMatrixAt(i,matrix);});
   m.instanceMatrix.needsUpdate=true;m.castShadow=true;m.receiveShadow=true;m.computeBoundingSphere();group.add(m);return m;
  }
- const cube=new T.BoxGeometry(1,1,1),crown=new T.IcosahedronGeometry(1,1),roof=new T.ConeGeometry(1,1,4);roof.rotateY(Math.PI/4);
+ const cube=new T.BoxGeometry(1,1,1),crown=new T.SphereGeometry(1,10,7),roof=new T.ConeGeometry(1,1,4);roof.rotateY(Math.PI/4);
  const treeTrunks=instances(trunks,cube,'#847359');if(treeTrunks)treeTrunks.name='world-tree-trunks';
  ['#4c8058','#689668','#80a471'].forEach((color,i)=>instances(crowns[i],crown,color));
  instances(houses,cube,'#e9ddbd');instances(roofs,roof,'#b96950');instances(windows,cube,'#68948f');

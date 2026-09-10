@@ -17,3 +17,7 @@ The MIT license at the repository root covers original project code and document
 This table highlights principal components; it is not a complete transitive dependency inventory. Exact package versions and license metadata are recorded in `package-lock.json`. Each installed dependency includes its own applicable notices. Preserve those notices when distributing dependency code or bundles. Additional copied license texts for principal runtime dependencies are retained under `LICENSES/`.
 
 School ownership statements do not apply to these libraries or fonts. No endorsement by their authors is implied.
+
+## Photographic material textures
+
+The brick, concrete, asphalt, grass, roof, bark and paving maps in `public/textures/` are [Poly Haven](https://polyhaven.com/) assets released under [CC0](https://polyhaven.com/license). Their original asset pages and download URLs are preserved in [the texture manifest](docs/texture-manifest.json). These are representative material scans, not photographs of the school's surfaces, and are separate from school media covered by ASSET_RIGHTS.md.

@@ -1,4 +1,7 @@
 import * as T from 'three';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+import {configureTextures,metricUV} from './materials';
+import {disposeShared} from './primitives';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { mapPoint, surfaceNormal } from '../world-math.mjs';
 import { places, featuredIds, type ViewMode } from './data';
@@ -13,20 +16,22 @@ type Options={onSelect:(id:string)=>void;onReady:()=>void;onError:(message:strin
 type Anchor={root:T.Group;x:number;z:number;yaw:number};
 export function createCampus(host:HTMLDivElement,options:Options){
  const renderer=new T.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});
- renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.6));renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFShadowMap;renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
+ renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.6));renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFShadowMap;renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
+ configureTextures(renderer.capabilities.getMaxAnisotropy());
  renderer.domElement.setAttribute('aria-label','Interactive Chong Hwa campus. Drag to orbit, scroll to zoom. Use the place directory to select a building.');
  renderer.domElement.setAttribute('role','img');renderer.domElement.tabIndex=0;host.appendChild(renderer.domElement);
  const scene=new T.Scene();
+ const pmrem=new T.PMREMGenerator(renderer),room=new RoomEnvironment(),environment=pmrem.fromScene(room,.04);scene.environment=environment.texture;scene.environmentIntensity=.35;room.dispose();pmrem.dispose();
  const camera=new T.OrthographicCamera(-150,150,150,-150,.1,1400);
  const controls=new OrbitControls(camera,renderer.domElement);
  controls.enableDamping=true;controls.dampingFactor=.075;controls.minZoom=.55;controls.maxZoom=3.5;controls.maxPolarAngle=Math.PI-.01;controls.minPolarAngle=.01;controls.screenSpacePanning=true;controls.rotateSpeed=.6;controls.autoRotateSpeed=.35;controls.zoomSpeed=.75;
  controls.mouseButtons={LEFT:T.MOUSE.ROTATE,MIDDLE:T.MOUSE.DOLLY,RIGHT:T.MOUSE.PAN};
- const hemi=new T.HemisphereLight('#f1faff','#8d9478',2.5);scene.add(hemi);
- const sun=new T.DirectionalLight('#fff0da',3.3);sun.position.set(-100,190,100);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-160,right:160,top:160,bottom:-160,near:10,far:500});sun.shadow.bias=-.0006;sun.shadow.normalBias=.45;scene.add(sun);
- const fill=new T.DirectionalLight('#d5e7ec',1);fill.position.set(100,30,-80);scene.add(fill);
- const globe=new T.Mesh(new T.SphereGeometry(109.6,72,48),material('#99b88b'));globe.position.y=-110;globe.material.transparent=true;globe.receiveShadow=true;scene.add(globe);
+ const hemi=new T.HemisphereLight('#dcecf5','#7c786a',1.35);scene.add(hemi);
+ const sun=new T.DirectionalLight('#fff1df',2.6);sun.position.set(-100,190,100);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-160,right:160,top:160,bottom:-160,near:10,far:500});sun.shadow.bias=-.0006;sun.shadow.normalBias=.09;scene.add(sun);
+ const fill=new T.DirectionalLight('#d5e7ec',.55);fill.position.set(100,30,-80);scene.add(fill);
+ const globe=new T.Mesh(new T.SphereGeometry(109.6,72,48),material('#99b88b'));globe.geometry.attributes.uv.array.forEach((_,i)=>{globe.geometry.attributes.uv.array[i]*=i%2?345:690;});globe.geometry.attributes.uv.needsUpdate=true;globe.position.y=-110;globe.material.transparent=true;globe.receiveShadow=true;scene.add(globe);
  const worldLayout=createWorldLayout(places),worldContext=createWorldContext(worldLayout,places);scene.add(worldContext.group);
- scene.add(new T.AmbientLight('#f4f1de',.65));
+ scene.add(new T.AmbientLight('#e7e9e0',.18));
  const walk=createWalk(scene,renderer.domElement,{onState:options.onWalkState,onInteract:options.onWalkInteract});
  const signTextures:T.Texture[]=[];const schoolCrest=new T.TextureLoader().load('/branding/chkl-official-crest.png');schoolCrest.colorSpace=T.SRGBColorSpace;
  const anchors:Anchor[]=[]; const pickables:T.Object3D[]=[];
@@ -34,7 +39,7 @@ export function createCampus(host:HTMLDivElement,options:Options){
  const add=(root:T.Group,x:number,z:number,yaw=0)=>{anchors.push({root,x,z,yaw});scene.add(root);return root;};
  const morphSurfaces:{mesh:T.Mesh;original:Float32Array}[]=[];
  function surface(w:number,d:number,x:number,z:number,color:string,raise=.04){
-  const geom=new T.PlaneGeometry(w,d,Math.max(1,Math.ceil(w/3)),Math.max(1,Math.ceil(d/3)));geom.rotateX(-Math.PI/2);geom.translate(x,raise,z);
+  const geom=new T.PlaneGeometry(w,d,Math.max(1,Math.ceil(w/3)),Math.max(1,Math.ceil(d/3)));geom.rotateX(-Math.PI/2);geom.translate(x,raise,z);metricUV(geom);
   const groundMaterial=material(color).clone();groundMaterial.transparent=true;campusMaterials.push(groundMaterial);
   const mesh=new T.Mesh(geom,groundMaterial);mesh.receiveShadow=true;scene.add(mesh);morphSurfaces.push({mesh,original:new Float32Array(geom.attributes.position.array as Float32Array)});return mesh;
  }
@@ -109,7 +114,7 @@ export function createCampus(host:HTMLDivElement,options:Options){
  const observer=new ResizeObserver(resize);observer.observe(host);
  camera.position.copy(positionFor('world',targetFor('world')));controls.target.copy(targetFor('world'));controls.update();morph(1);resize();
  function setMode(next:ViewMode){
-  walk.setActive(false);mode=next;focusTransition=null;pendingFocus=null;controls.autoRotate=false;controls.enabled=false;auto=false;
+  walk.setActive(false);mode=next;scene.background=next==='walk'?new T.Color('#cbdce3'):null;scene.fog=next==='walk'?new T.Fog('#cbdce3',150,430):null;focusTransition=null;pendingFocus=null;controls.autoRotate=false;controls.enabled=false;auto=false;
   controls.maxPolarAngle=next==='world'?Math.PI-.01:Math.PI*.48;
   const target=targetFor(next);
   transition={start:performance.now(),from:curve,to:next==='world'?1:0,fromPos:camera.position.clone(),toPos:positionFor(next,target),fromTarget:controls.target.clone(),toTarget:target,fromZoom:camera.zoom,toZoom:1};
@@ -156,5 +161,5 @@ export function createCampus(host:HTMLDivElement,options:Options){
   renderer.render(scene,mode==='walk'&&!transition?walk.camera:camera);
  }
  raf=requestAnimationFrame(animate);options.onReady();
- return{walk,setMode,setSelected(id:string|null){selected=id;updateHighlight();if(id)focusPlace(id);markerEntries.forEach(({p,element})=>element.setAttribute('aria-pressed',String(id===p.id)));},setLabels(value:boolean){showLabels=value;},zoom,reset(){if(mode==='walk')walk.reset();else setMode(mode);},setOrbit(value:boolean){auto=value;controls.autoRotate=value&&!reduced&&mode!=='plan'&&mode!=='walk';},dispose(){disposed=true;cancelAnimationFrame(raf);observer.disconnect();controls.dispose();walk.dispose();schoolCrest.dispose();signTextures.forEach(t=>t.dispose());worldContext.dispose();campusMaterials.forEach(m=>m.dispose());highlight.material.dispose();scene.traverse(o=>{if(o instanceof T.InstancedMesh)o.dispose();if(o instanceof T.Mesh){o.geometry.dispose();if(o.material instanceof T.MeshBasicMaterial)o.material.dispose();}});renderer.dispose();renderer.domElement.remove();labels.remove();}};
+ return{walk,setMode,setSelected(id:string|null){selected=id;updateHighlight();if(id)focusPlace(id);markerEntries.forEach(({p,element})=>element.setAttribute('aria-pressed',String(id===p.id)));},setLabels(value:boolean){showLabels=value;},zoom,reset(){if(mode==='walk')walk.reset();else setMode(mode);},setOrbit(value:boolean){auto=value;controls.autoRotate=value&&!reduced&&mode!=='plan'&&mode!=='walk';},dispose(){disposed=true;cancelAnimationFrame(raf);observer.disconnect();controls.dispose();walk.dispose();schoolCrest.dispose();signTextures.forEach(t=>t.dispose());worldContext.dispose();campusMaterials.forEach(m=>m.dispose());highlight.material.dispose();scene.traverse(o=>{if(o instanceof T.InstancedMesh)o.dispose();if(o instanceof T.Mesh){o.geometry.dispose();if(o.material instanceof T.MeshBasicMaterial)o.material.dispose();}});environment.dispose();disposeShared();renderer.dispose();renderer.domElement.remove();labels.remove();}};
 }
