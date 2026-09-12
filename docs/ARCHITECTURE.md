@@ -18,9 +18,15 @@ Visits are recorded in page memory. Refreshing resets the passport. Opening a pl
 
 `components/panorama.tsx` displays available equirectangular school photographs inside a separate viewer. A photo sphere is a fixed photographic viewpoint, not an interior that supports walking through a scanned model.
 
-## Building visits and interiors
+## Building visits and photographic models
 
-`components/building-visit-dialog.tsx` presents entry choices and switches between reconstructed rooms, verified panoramas and the arena photograph. `interior-layout.ts` holds twelve approximate room layouts and bounded, substepped furniture collision rules. `interior-scene.ts` renders rooms with first-person keyboard, drag and touch movement; `components/interior-view.tsx` manages its lifecycle. Interior layouts are illustrative and must never be described as surveyed school geometry.
+`components/building-visit-dialog.tsx` presents available entry choices and switches between a photo-based walkable model, an original 360° panorama and, for the arena, an ordinary photograph. A walkable model is offered only for a registered, manually traced photograph. Other verified panoramas remain photographic viewers; an unsupported building has no invented interior.
+
+`photo-rooms.ts` maps the five supported image filenames to their traced layouts. `photo-room-layout.ts` defines the layout data; `room-traces-library.ts` and `room-traces-hall.ts` describe visible room boundaries and observed furniture. `photo-room-math.ts` supplies collision and movement constraints. `photo-depth-geometry.ts` samples rays from the source camera against the traced shell and furniture to build a dense depth mesh. Each ray uses only its nearest visible surface, avoiding a duplicate projection onto hidden faces. `photo-room-scene.ts` applies the original equirectangular school image to that mesh and manages first-person rendering and input. The React viewer mounts and disposes that scene.
+
+Projection uses the source camera as its reference: looking around from the capture point aligns the model with the panorama. Moving the camera reveals estimated depth. A single panorama supplies no reliable texture for hidden sides of furniture or geometry behind an obstruction, so movement is restricted to a small area near the capture point. Even nearby movement can stretch surfaces or expose gaps at depth boundaries. Reset returns to the capture point. This is an initial photo-based depth reconstruction, not a complete modelled room or measured floor plan.
+
+When adding a model, trace an identified source photograph, record the visible surfaces and furniture, and set a movement boundary that avoids unsupported areas. Keep the original panorama available for comparison. Check the capture-point alignment, nearby movement, obstacle collisions and the return/reset path. Do not populate unseen areas with guessed furniture or advertise unrestricted room exploration.
 
 While an entry or panorama viewer is open, the campus renderer is suspended and walking input is paused. Closing the viewer resumes the campus; switching viewers disposes the previous scene. Other campus overlays pause walking without suspending camera transitions.
 

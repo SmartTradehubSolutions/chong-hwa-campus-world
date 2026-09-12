@@ -1,36 +1,32 @@
 'use client';
 import {useState} from 'react';
-import {DoorOpen,Camera,ArrowLeft,ArrowUpRight} from 'lucide-react';
+import {ArrowLeft,ArrowUpRight} from 'lucide-react';
 import {Dialog,DialogContent,DialogTitle,DialogDescription} from '@/components/ui/dialog';
-import InteriorView from './interior-view';
+import PhotoRoomView from './photo-room-view';
 import Panorama from './panorama';
-import {interiorFor} from '@/lib/campus/interior-layout';
+import {photoRoomFor,firstPhotoRoom} from '@/lib/campus/photo-rooms';
+import {photoSources} from '@/lib/campus/photo-sources';
 import {SOURCE,type Place} from '@/lib/campus/data';
 
 export default function BuildingVisitDialog({place,onClose}:{place:Place;onClose:()=>void}){
- const [view,setView]=useState<'choice'|'3d'|'panorama'|'photo'>('choice');
- const [image,setImage]=useState(place.views?.[0]?.image||'');
- const room=interiorFor(place.id),real=place.views?.find(v=>v.image===image);
+ const first=firstPhotoRoom(place.id);
+ const [image,setImage]=useState(first?.image||place.views?.[0]?.image||'');
+ const [walk,setWalk]=useState(!!first);
+ const real=place.views?.find(v=>v.image===image),room=photoRoomFor(image),is3D=walk&&!!room;
+ const hasView=!!real||place.id==='L';
  return <Dialog open onOpenChange={open=>{if(!open)onClose();}}>
-  <DialogContent className={'visit-dialog '+(view==='choice'?'visit-choice-dialog':'visit-viewer-dialog')}>
-   <div className="visit-heading"><DialogTitle>{place.name}</DialogTitle><DialogDescription>{view==='3d'?'Walkable 3D reconstruction · Approximate room and furniture':view==='panorama'?'Actual school 360° photograph':view==='photo'?'Actual school photograph · Not a 360° view':'Choose how you would like to explore.'}</DialogDescription></div>
-   {view==='choice'?<div className="visit-options">
-    <button onClick={()=>room?setView('3d'):onClose()}><DoorOpen size={26}/><span><strong>{room?'Explore in 3D':'Explore the outdoor 3D view'}</strong><span>{room?'Enter a reconstructed room. Walk around and look freely.':'Continue exploring this outdoor landmark in the campus model.'}</span></span></button>
-    <button disabled={!place.views?.length} onClick={()=>setView('panorama')}><Camera size={26}/><span><strong>Real school panorama</strong><span>{place.views?.length?place.views.length+' actual 360° '+(place.views.length===1?'photograph':'photographs')+' published by the school.':'No verified 360° photograph is mapped to this building yet.'}</span></span></button>
-    {place.id==='L'&&<button onClick={()=>setView('photo')}><Camera size={24}/><span><strong>View the arena photograph</strong><span>The official source provides a regular photo of the courts.</span></span></button>}
-    <p>3D rooms are illustrative reconstructions, not scans or verified floor plans. Real panoramas show the school as photographed.</p>
-   </div>:<>
+  <DialogContent className={'visit-dialog '+(hasView?'visit-viewer-dialog':'visit-choice-dialog')}>
+   <div className="visit-heading"><DialogTitle>{real?.name||place.name}</DialogTitle><DialogDescription>{place.name}{real?(is3D?' · 3D model built from this school photograph':' · Original school 360° photograph'):place.id==='L'?' · Official photograph':' · Interior reference unavailable'}</DialogDescription></div>
+   {real?<>
     <nav className="visit-switcher" aria-label="Explore mode">
-     {room&&<button aria-pressed={view==='3d'} onClick={()=>setView('3d')}>Explore in 3D</button>}
-     {!!place.views?.length&&<button aria-pressed={view==='panorama'} onClick={()=>setView('panorama')}>Real school panorama</button>}
-     <button onClick={()=>setView('choice')}>Visit options</button>
+     <button disabled={!room} aria-pressed={is3D} onClick={()=>setWalk(true)}>{room?'Photo-matched 3D':'3D model not yet traced'}</button>
+     <button aria-pressed={!is3D} onClick={()=>setWalk(false)}>Original 360° photo</button>
     </nav>
-    {view==='3d'&&<InteriorView key={place.id} placeId={place.id}/>}
-    {view==='panorama'&&real&&<Panorama key={real.image} image={real.image} name={real.name}/>}
-    {view==='photo'&&<div className="visit-photo"><img src="/media/arena-photo.jpg" alt="Official photograph of the Chong Hwa arena courts"/></div>}
-    {view==='panorama'&&!!place.views?.length&&<label className="visit-photo-picker">View<select aria-label="Choose a real school panorama" value={image} onChange={e=>setImage(e.target.value)}>{place.views.map(v=><option key={v.image} value={v.image}>{v.name}</option>)}</select></label>}
-   </>}
-   <div className="visit-footer"><button onClick={onClose}><ArrowLeft size={16}/> Back to campus</button><a href={place.source||SOURCE} target="_blank" rel="noreferrer">School source <ArrowUpRight size={14}/></a></div>
+    {is3D&&room?<PhotoRoomView key={room.image} room={room}/>:<Panorama key={real.image} image={real.image} name={real.name}/>}
+    <div className="visit-photo-picker"><label htmlFor="visit-photo-select">Photographed location</label><select id="visit-photo-select" aria-label="Choose a real school panorama" value={image} onChange={e=>{setImage(e.target.value);setWalk(!!photoRoomFor(e.target.value));}}>{place.views?.map(v=><option key={v.image} value={v.image}>{v.name}{photoRoomFor(v.image)?' · 3D + 360°':' · 360°'}</option>)}</select></div>
+    <p className="photo-model-note">{is3D?'Walls and visible furniture are traced from this panorama. Depth is estimated; movement stays near the photo position to limit distortion.':'Look around from the original camera position. Choose another photographed location to move between views.'}</p>
+   </>:place.id==='L'?<><div className="visit-photo"><img src="/media/arena-photo.jpg" alt="Official photograph of the Chong Hwa arena courts"/></div><p className="photo-model-note">The school source provides this regular photograph. A panorama-based walkable model is not available here.</p></>:<div className="visit-unavailable"><p>No verified interior panorama is mapped to this building yet.</p><p>{place.description}</p></div>}
+   <div className="visit-footer"><button onClick={onClose}><ArrowLeft size={16}/> Back to campus</button><a href={photoSources[image]||place.source||SOURCE} target="_blank" rel="noreferrer">School source <ArrowUpRight size={14}/></a></div>
   </DialogContent>
  </Dialog>;
 }

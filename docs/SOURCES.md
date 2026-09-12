@@ -38,10 +38,26 @@ The model combines references from different dates, including 2020/2023 panorama
 
 The reconstructed scene uses locally hosted albedo, OpenGL normal and roughness maps from [Poly Haven](https://polyhaven.com/). Seven CC0 material sets are documented in [texture-manifest.json](texture-manifest.json). Metric texture coordinates keep brick and paving size consistent across large façades. These generic surface scans approximate the referenced concrete, brick and roof finishes; they do not establish exact school materials.
 
-Entrance interactions offer a choice between a walkable 3D reconstruction and a verified school panorama. A viewer selector exposes other mapped photographic viewpoints in the same building. Blocks I, J, G, E, C and L have no verified panorama assigned; L also offers an ordinary official photograph.
+Entrance interactions offer verified school panoramas and, where the source image has been manually traced, a photo-based walkable model. A viewer selector exposes other mapped photographic viewpoints in the same building. Blocks I, J, G, E, C and L have no verified panorama assigned and do not offer an invented 3D interior; L offers an ordinary official photograph.
 
-## Trees and interior exploration · 12 September 2026
+## Models traced from school panoramas · 12 September 2026
 
-Twelve enclosed landmarks offer illustrative furnished rooms based on their facility category: library, hall, classroom, office, canteen, hostel or sports arena. Room dimensions, furniture and layouts are invented approximations, not measured school interiors. The entry menu and viewer label this distinction. Gate and pond locations remain outdoor exploration. Real school panoramas are kept separate from these reconstructed rooms.
+The earlier generic furnished rooms have been replaced. Walkable models are available only for these five identified photographs:
+
+| Photographic viewpoint | Local original | School source |
+| --- | --- | --- |
+| Library · Level 12 | `public/media/pusatsumber-1.jpg` | [Resource centre](https://www.chonghwakl.edu.my/campusfacilities/cfac-pusatsumber/) |
+| Library · Level 13 | `public/media/pusatsumber-3.jpg` | [Resource centre](https://www.chonghwakl.edu.my/campusfacilities/cfac-pusatsumber/) |
+| Kong Chen Hall | `public/media/guangqiantang-1.jpg` | [光前堂](https://www.chonghwakl.edu.my/campusfacilities/cfac-guangqiantang/) |
+| Administration small hall | `public/media/xingzhenglouxiaolitang-1.jpg` | [小礼堂](https://www.chonghwakl.edu.my/campusfacilities/cfac-xingzhenglouxiaolitang/) |
+| Food court | `public/media/meishifang-1.jpg` | [美食坊](https://www.chonghwakl.edu.my/campusfacilities/cfac-meishifang/) |
+
+Visible walls, floor, ceiling and furniture are manually traced from each source. A depth mesh retains the nearest surface in each sampled direction from the camera, and the original photograph supplies its appearance. At the photo capture point, the projected image aligns with the source panorama. Depth, dimensions and collision shapes are estimates from a single viewpoint, not surveyed measurements. This initial depth reconstruction covers the surfaces visible in the photograph, not a complete modelled room. Walking is limited to the nearby area; movement can still stretch surfaces or expose gaps where previously hidden areas become visible. No additional furniture is supplied merely because a room belongs to a particular facility category.
+
+The original 360° mode remains available for each verified panorama, including photographs without a traced model. The gate, pond, courtyard, hostel and other untraced views do not become fabricated walkable rooms. Original media URLs remain recorded in the [media manifest](media-manifest.json). Projecting the photograph onto geometry does not change the school media's rights.
+
+## Trees · 12 September 2026
 
 Tree trunks and branches use the existing bark material; individual curved leaves are generated in code with varied shapes, placement and colors. These trees are illustrative vegetation, not surveyed species or exact planting locations.
+
+The general hostel room photograph is retained in the media archive but is not assigned specifically to the girls’ building: the source describes both hostels and does not identify which one is pictured. The girls’ hostel visit keeps the mapped ground-floor canteen viewpoint.

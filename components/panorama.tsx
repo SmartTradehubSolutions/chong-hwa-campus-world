@@ -7,9 +7,9 @@ export default function Panorama({image,name}:{image:string;name:string}){
  import('three').then(T=>{if(cancelled||!host.current)return;const el=host.current;
  let renderer:import('three').WebGLRenderer;try{renderer=new T.WebGLRenderer({antialias:true});}catch{setStatus('error');return;}
  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));el.appendChild(renderer.domElement);
- const scene=new T.Scene(),camera=new T.PerspectiveCamera(72,1,.1,100),geometry=new T.SphereGeometry(20,64,40);geometry.scale(-1,1,1);
+ const scene=new T.Scene(),camera=new T.PerspectiveCamera(70,1,.1,100),geometry=new T.SphereGeometry(20,64,40);geometry.scale(-1,1,1);
  const material=new T.MeshBasicMaterial({color:'#ffffff'}),mesh=new T.Mesh(geometry,material);scene.add(mesh);
- let texture:import('three').Texture|undefined,raf=0,yaw=0,pitch=0,drag=false,last={x:0,y:0};
+ let texture:import('three').Texture|undefined,raf=0,yaw=-Math.PI/2,pitch=0,drag=false,last={x:0,y:0};
  new T.TextureLoader().load('/media/'+image,t=>{if(cancelled){t.dispose();return;}texture=t;t.colorSpace=T.SRGBColorSpace;material.map=t;material.needsUpdate=true;setStatus('ready');},undefined,()=>!cancelled&&setStatus('error'));
  const resize=()=>{camera.aspect=el.clientWidth/el.clientHeight;camera.updateProjectionMatrix();renderer.setSize(el.clientWidth,el.clientHeight);};const observer=new ResizeObserver(resize);observer.observe(el);resize();
  const down=(e:PointerEvent)=>{drag=true;last={x:e.clientX,y:e.clientY};renderer.domElement.setPointerCapture(e.pointerId);};
