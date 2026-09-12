@@ -15,12 +15,12 @@ Walk around a playful 3D interpretation of **Chong Hwa Independent High School, 
 - **Explore textured architecture:** photographic brick, concrete, roof, bark, paving and road materials, finer window details, branching trees with individual leaves and natural daylight. These are representative materials on an illustrative reconstruction.
 - **Explore three map views:** rotate a world with landmarks spread around the globe, view the 3D campus, or flatten it into a plan.
 - **Walk as a student:** choose a boy or girl character, pass uniformed student characters and occasional teachers, and explore in third person.
-- **Discover the school:** press **E** at an entrance to choose an available real school panorama or a walkable model traced from that photograph. Five photographed viewpoints support limited movement: the level 12 and level 13 libraries, Kong Chen Hall, the administration small hall and the food court. Other verified photographs remain available as original 360° views. Buildings without a traced model do not receive a made-up interior.
+- **Discover the school:** press **E** at an entrance to open its original school panorama. Look around and use the image picker to choose another photographed location in the same building. The sports arena displays an ordinary official photograph; buildings without a verified panorama show their information.
 - **Fill your campus passport:** visit 15 stops, including the basketball court. Progress lasts for the current page session.
 - **Play basketball:** aim, charge and release five shots, then try to beat your score.
 - **Find your way:** use the directory, labels, minimap and camera controls. Touch controls are available for walking.
 
-The campus buildings and characters are generated in code with Three.js. Students and teachers are fictional characters, not models of real people. The outdoor campus is an illustrative reconstruction. The five supported photographic viewpoints use initial depth reconstructions: visible room surfaces and furniture are manually traced, then the actual panorama is applied to a mesh of the surfaces seen from the camera. The view aligns with the photograph at its capture point; depth and dimensions are estimated. Nearby movement can still stretch surfaces or expose gaps where the photograph contains no information. These are partial photo-based models, not complete modelled rooms, scans or surveyed floor plans. Panoramas represent the dates when the original photographs were taken.
+The campus buildings and characters are generated in code with Three.js. Students and teachers are fictional characters, not models of real people. The outdoor campus is an illustrative reconstruction. Building visits show the original school photographs: panoramas let you look around from their fixed camera positions, and the image picker moves between available viewpoints. There are no walkable indoor models. Panoramas represent the dates when the original photographs were taken.
 
 ## Run locally
 
@@ -56,10 +56,9 @@ Release validation covers automated geometry and behavior tests, TypeScript chec
 | --- | --- |
 | Map exploration | Drag to orbit, scroll to zoom, and use the on-screen camera controls |
 | Walking | **WASD** or **arrow keys**; hold **Shift** to run; drag to look |
-| Visit a building | Walk to a gold entrance ring, then press **E** or tap to choose an available photo-based model or real panorama |
+| Visit a building | Walk to a gold entrance ring, then press **E** or tap to open its panorama, photograph or information |
 | Touch walking | Use the on-screen directional pad and interaction buttons |
-| Photo-based model | **WASD** / **arrow keys** or touch arrows to move near the photographed viewpoint; drag to look; reset to the photo capture point |
-| Panorama | Drag to look around and scroll to zoom; keyboard controls are also supported |
+| Panorama | Drag to look around and scroll to zoom; use the image picker to change viewpoints; keyboard controls are also supported |
 | Basketball | **A/D** to aim; hold **Space** or the shot button and release near the marked power target |
 
 ## Deploy your fork
@@ -82,10 +81,7 @@ components/ui/           Shared UI components
 lib/campus/data.ts       Landmarks, descriptions and panorama references
 lib/campus/primitives.ts Procedural buildings and court geometry
 lib/campus/vegetation.ts Branching trees and individual leaf geometry
-lib/campus/photo-room-*  Traced-room types, collisions and photographic projection
-lib/campus/photo-depth-geometry.ts Visible-surface depth mesh from the traces
-lib/campus/photo-rooms.ts Registry of supported photographic viewpoints
-lib/campus/room-traces-* Manually traced surfaces and visible furniture
+lib/campus/photo-sources.ts Original school source pages for photographs
 lib/campus/characters.ts Student and teacher models
 lib/campus/scene.ts      Cameras, picking and map transitions
 lib/campus/walk-*        Walking, collisions, visits and basketball

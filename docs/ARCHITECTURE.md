@@ -18,17 +18,15 @@ Visits are recorded in page memory. Refreshing resets the passport. Opening a pl
 
 `components/panorama.tsx` displays available equirectangular school photographs inside a separate viewer. A photo sphere is a fixed photographic viewpoint, not an interior that supports walking through a scanned model.
 
-## Building visits and photographic models
+## Building visits
 
-`components/building-visit-dialog.tsx` presents available entry choices and switches between a photo-based walkable model, an original 360° panorama and, for the arena, an ordinary photograph. A walkable model is offered only for a registered, manually traced photograph. Other verified panoramas remain photographic viewers; an unsupported building has no invented interior.
+Pressing E at an entrance opens the first mapped school panorama directly. `components/building-visit-dialog.tsx` manages the original 360° viewer and image picker, the arena's ordinary photograph, and information for buildings without verified panoramas. `lib/campus/photo-sources.ts` maps photographs to their school source pages.
 
-`photo-rooms.ts` maps the five supported image filenames to their traced layouts. `photo-room-layout.ts` defines the layout data; `room-traces-library.ts` and `room-traces-hall.ts` describe visible room boundaries and observed furniture. `photo-room-math.ts` supplies collision and movement constraints. `photo-depth-geometry.ts` samples rays from the source camera against the traced shell and furniture to build a dense depth mesh. Each ray uses only its nearest visible surface, avoiding a duplicate projection onto hidden faces. `photo-room-scene.ts` applies the original equirectangular school image to that mesh and manages first-person rendering and input. The React viewer mounts and disposes that scene.
+`components/panorama.tsx` keeps the camera at the photograph's original viewpoint. Visitors look around or select another mapped image; there is no indoor walking mode. Generic rooms and the photo-depth reconstruction experiment have been removed.
 
-Projection uses the source camera as its reference: looking around from the capture point aligns the model with the panorama. Moving the camera reveals estimated depth. A single panorama supplies no reliable texture for hidden sides of furniture or geometry behind an obstruction, so movement is restricted to a small area near the capture point. Even nearby movement can stretch surfaces or expose gaps at depth boundaries. Reset returns to the capture point. This is an initial photo-based depth reconstruction, not a complete modelled room or measured floor plan.
+While a building visit or panorama viewer is open, the campus renderer is suspended and walking input is paused. Closing the viewer resumes the campus. Other campus overlays pause walking without suspending camera transitions.
 
-When adding a model, trace an identified source photograph, record the visible surfaces and furniture, and set a movement boundary that avoids unsupported areas. Keep the original panorama available for comparison. Check the capture-point alignment, nearby movement, obstacle collisions and the return/reset path. Do not populate unseen areas with guessed furniture or advertise unrestricted room exploration.
-
-While an entry or panorama viewer is open, the campus renderer is suspended and walking input is paused. Closing the viewer resumes the campus; switching viewers disposes the previous scene. Other campus overlays pause walking without suspending camera transitions.
+When adding a panorama, verify the source and its location, update the landmark's image list and source mapping, and check the viewer and image picker on desktop and mobile. Preserve the distinction between a 360° panorama and an ordinary photograph.
 
 `vegetation.ts` caches seeded branch and individual leaf geometry. Campus trees use 650 leaves; globe background trees use 150 leaves and instancing to limit draw calls.
 
