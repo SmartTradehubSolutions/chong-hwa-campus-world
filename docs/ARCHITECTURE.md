@@ -18,6 +18,14 @@ Visits are recorded in page memory. Refreshing resets the passport. Opening a pl
 
 `components/panorama.tsx` displays available equirectangular school photographs inside a separate viewer. A photo sphere is a fixed photographic viewpoint, not an interior that supports walking through a scanned model.
 
+## Building visits and interiors
+
+`components/building-visit-dialog.tsx` presents entry choices and switches between reconstructed rooms, verified panoramas and the arena photograph. `interior-layout.ts` holds twelve approximate room layouts and bounded, substepped furniture collision rules. `interior-scene.ts` renders rooms with first-person keyboard, drag and touch movement; `components/interior-view.tsx` manages its lifecycle. Interior layouts are illustrative and must never be described as surveyed school geometry.
+
+While an entry or panorama viewer is open, the campus renderer is suspended and walking input is paused. Closing the viewer resumes the campus; switching viewers disposes the previous scene. Other campus overlays pause walking without suspending camera transitions.
+
+`vegetation.ts` caches seeded branch and individual leaf geometry. Campus trees use 650 leaves; globe background trees use 150 leaves and instancing to limit draw calls.
+
 ## Extending the campus
 
 For a new landmark, update the directory, procedural geometry and entrance/collision data together. Check the globe view, flat position and walk-mode approach. Add a source citation for the building description and any images.

@@ -1,4 +1,5 @@
 import * as T from 'three';
+import {treeGeometry,foliageMaterial} from './vegetation';
 import {surfaceMaterial,metricUV} from './materials';
 import {WORLD_RADIUS,sphereNormal,type WorldAnchor} from './world-layout.mjs';
 import type {Place} from './data';
@@ -35,7 +36,7 @@ export function createWorldContext(layout:Map<string,WorldAnchor>,places:Place[]
   }
  });
  mesh(pads,'#d5d5b4');mesh(roadBorder,'#d7dcc0');mesh(roads,'#889e91');mesh(lines,'#f4e9cc');
- const trunks:Instance[]=[],crowns:Instance[][]=[[],[],[]],houses:Instance[]=[],roofs:Instance[]=[],windows:Instance[]=[];
+ const trunks:Instance[]=[],houses:Instance[]=[],roofs:Instance[]=[],windows:Instance[]=[];
  const lanterns:Instance[]=[],lampHeads:Instance[]=[];
  const placedHomes:T.Vector3[]=[];
  for(let i=0;i<950;i++){
@@ -50,8 +51,7 @@ export function createWorldContext(layout:Map<string,WorldAnchor>,places:Place[]
    windows.push({normal:n,scale:new T.Vector3(w*.8,.65,d+.12),height:height*.65,yaw});
    placedHomes.push(n);
   }else if(trunks.length<390){
-   trunks.push({normal:n,scale:new T.Vector3(.42,h*.74,.42),height:h*.36});
-   crowns[i%3].push({normal:n,scale:new T.Vector3(h*.48,h*.58,h*.48),height:h*.87,yaw:i*.4});
+   trunks.push({normal:n,scale:new T.Vector3(h,h,h),height:0,yaw:i*.4});
   }
  }
  roadSamples.filter((_,i)=>i%38===0).forEach((n,i)=>{if(nodes.some(node=>n.distanceTo(node.normal)*R<node.clearance))return;
@@ -59,15 +59,16 @@ export function createWorldContext(layout:Map<string,WorldAnchor>,places:Place[]
   lanterns.push({normal:offset,scale:new T.Vector3(.2,4.2,.2),height:2.1});
   lampHeads.push({normal:offset,scale:new T.Vector3(1.1,.3,1.1),height:4.3,yaw:i});
  });
- function instances(items:Instance[],geom:T.BufferGeometry,color:string){
+ function instances(items:Instance[],geom:T.BufferGeometry,color:string,custom?:T.MeshStandardMaterial){
   if(!items.length)return;
-  const m=new T.InstancedMesh(geom,mat(color),items.length),matrix=new T.Matrix4(),q=new T.Quaternion(),yawQ=new T.Quaternion(),p=new T.Vector3();
+  const finish=custom?custom.clone():mat(color);if(custom){finish.transparent=true;materials.push(finish);}const m=new T.InstancedMesh(geom,finish,items.length),matrix=new T.Matrix4(),q=new T.Quaternion(),yawQ=new T.Quaternion(),p=new T.Vector3();
   items.forEach((a,i)=>{q.setFromUnitVectors(UP,a.normal);yawQ.setFromAxisAngle(UP,a.yaw||0);q.multiply(yawQ);p.copy(a.normal).multiplyScalar(R+a.height+.4);matrix.compose(p,q,a.scale);m.setMatrixAt(i,matrix);});
   m.instanceMatrix.needsUpdate=true;m.castShadow=true;m.receiveShadow=true;m.computeBoundingSphere();group.add(m);return m;
  }
- const cube=new T.BoxGeometry(1,1,1),crown=new T.SphereGeometry(1,10,7),roof=new T.ConeGeometry(1,1,4);roof.rotateY(Math.PI/4);
- const treeTrunks=instances(trunks,cube,'#847359');if(treeTrunks)treeTrunks.name='world-tree-trunks';
- ['#4c8058','#689668','#80a471'].forEach((color,i)=>instances(crowns[i],crown,color));
+ const cube=new T.BoxGeometry(1,1,1),roof=new T.ConeGeometry(1,1,4);roof.rotateY(Math.PI/4);
+ const grove=treeGeometry(2,150);
+ const treeTrunks=instances(trunks,grove.wood,'#847359');if(treeTrunks)treeTrunks.name='world-tree-trunks';
+ instances(trunks,grove.leaves,'#4c8058',foliageMaterial);
  instances(houses,cube,'#e9ddbd');instances(roofs,roof,'#b96950');instances(windows,cube,'#68948f');
  instances(lanterns,cube,'#798378');instances(lampHeads,cube,'#f0d9a4');
  group.userData.treeCount=trunks.length;group.userData.houseCount=houses.length;group.userData.roadCount=edges.size;

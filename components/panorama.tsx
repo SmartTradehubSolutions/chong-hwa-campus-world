@@ -19,7 +19,7 @@ export default function Panorama({image,name}:{image:string;name:string}){
  renderer.domElement.tabIndex=0;renderer.domElement.setAttribute('aria-label',name+' panorama. Drag or use arrow keys to look around.');
  renderer.domElement.addEventListener('pointerdown',down);renderer.domElement.addEventListener('pointermove',move);renderer.domElement.addEventListener('pointerup',up);renderer.domElement.addEventListener('wheel',wheel,{passive:false});renderer.domElement.addEventListener('keydown',key);
  const render=()=>{raf=requestAnimationFrame(render);camera.lookAt(Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch));renderer.render(scene,camera);};render();
- cleanup=()=>{cancelAnimationFrame(raf);observer.disconnect();texture?.dispose();geometry.dispose();material.dispose();renderer.dispose();renderer.domElement.remove();};
+ cleanup=()=>{cancelAnimationFrame(raf);observer.disconnect();texture?.dispose();geometry.dispose();material.dispose();renderer.dispose();renderer.forceContextLoss();renderer.domElement.remove();};
  }).catch(()=>!cancelled&&setStatus('error'));return()=>{cancelled=true;cleanup();};
  },[image,name]);
  return <div className="panorama-wrap"><div ref={host} className="panorama-canvas"/>{status==='loading'&&<div className="panorama-status"><LoaderCircle className="loading-spin"/> Opening your view…</div>}{status==='error'&&<div className="panorama-status">This panorama couldn’t load. <a href={'/media/'+image} target="_blank" rel="noreferrer">Open the photo</a></div>}<p className="panorama-hint"><Move size={16}/> Drag to look around · Scroll to zoom</p></div>;

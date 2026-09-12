@@ -2,7 +2,6 @@ import * as T from 'three';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
 import type {Place} from './data';
 import {surfaceMaterial,metricUV,disposeMaterials} from './materials';
-import {batchMeshes} from './batch-meshes';
 export const material=surfaceMaterial;
 const boxGeometries=new Map<string,T.BufferGeometry>();
 const cube=new T.BoxGeometry(1,1,1),roundedCube=new RoundedBoxGeometry(1,1,1,1,.1);
@@ -96,24 +95,7 @@ export function building(p:Place){
  }
  return g;
 }
-const canopyGeometry=new T.SphereGeometry(1,12,9);
-{
- const a=canopyGeometry.attributes.position;
- for(let i=0;i<a.count;i++){const x=a.getX(i),y=a.getY(i),z=a.getZ(i);const k=1+.09*Math.sin(x*17+y*9+z*13);a.setXYZ(i,x*k,y*k,z*k);}
- canopyGeometry.computeVertexNormals();
-}
-export function tree(seed=1){
- const g=new T.Group(),h=3.5+(Math.sin(seed*73.1)+1)*1.4;
- const trunk=new T.Mesh(metricUV(new T.CylinderGeometry(.17,.3,h,9)),material('#8c7960'));trunk.position.y=h*.48;trunk.castShadow=true;g.add(trunk);
- const colors=['#487958','#5b8c62','#72996a'];
- for(let i=0;i<5;i++){
-  const a=i*2.4+seed,r=i?h*.32:0,top=h+(i===0?h*.2:Math.sin(i+seed)*.45);
-  const crown=new T.Mesh(canopyGeometry,material(colors[(Math.abs(seed)+i)%3]));
-  crown.position.set(Math.cos(a)*r,top,Math.sin(a)*r);crown.scale.set(h*.46,h*(i===0?.53:.34),h*.43);crown.castShadow=true;crown.receiveShadow=true;g.add(crown);
-  if(i){const branch=new T.Mesh(new T.CylinderGeometry(.065,.12,h*.6,6),material('#8c7960'));branch.position.set(Math.cos(a)*r*.45,h*.73,Math.sin(a)*r*.45);branch.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),new T.Vector3(Math.cos(a)*r,h*.45,Math.sin(a)*r).normalize());g.add(branch);}
- }
- batchMeshes(g);return g;
-}
+export {naturalTree as tree} from './vegetation';
 export function court(){
  const g=new T.Group();box(g,0,.12,0,17,.2,28,'#719c8f');
  box(g,0,.24,0,13,.04,24,'#559ebc');

@@ -38,4 +38,10 @@ The model combines references from different dates, including 2020/2023 panorama
 
 The reconstructed scene uses locally hosted albedo, OpenGL normal and roughness maps from [Poly Haven](https://polyhaven.com/). Seven CC0 material sets are documented in [texture-manifest.json](texture-manifest.json). Metric texture coordinates keep brick and paving size consistent across large façades. These generic surface scans approximate the referenced concrete, brick and roof finishes; they do not establish exact school materials.
 
-Entrance interactions now open the first existing, verified school panorama directly. A viewer selector exposes other mapped views in the same building. No unverified room has been assigned to an otherwise undocumented block. Blocks I, J, G, E and C currently show facility information; L shows an ordinary official photograph. They are not presented as scanned or 360° interiors.
+Entrance interactions offer a choice between a walkable 3D reconstruction and a verified school panorama. A viewer selector exposes other mapped photographic viewpoints in the same building. Blocks I, J, G, E, C and L have no verified panorama assigned; L also offers an ordinary official photograph.
+
+## Trees and interior exploration · 12 September 2026
+
+Twelve enclosed landmarks offer illustrative furnished rooms based on their facility category: library, hall, classroom, office, canteen, hostel or sports arena. Room dimensions, furniture and layouts are invented approximations, not measured school interiors. The entry menu and viewer label this distinction. Gate and pond locations remain outdoor exploration. Real school panoramas are kept separate from these reconstructed rooms.
+
+Tree trunks and branches use the existing bark material; individual curved leaves are generated in code with varied shapes, placement and colors. These trees are illustrative vegetation, not surveyed species or exact planting locations.
